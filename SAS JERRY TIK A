@@ -1,0 +1,65 @@
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C LCD = LiquidCrystal_I2C(0x27, 16, 2);
+
+const int greenbutton = 4;
+const int redbutton = 2;
+
+int counter = 0;
+
+int lastGreenButtonState = HIGH;
+int lastRedButtonState = HIGH;
+
+void setup() {
+  pinMode(greenbutton, INPUT_PULLUP);
+  pinMode(redbutton, INPUT_PULLUP);
+
+  Serial.begin(115200);
+
+  LCD.init();
+  LCD.backlight();
+
+  LCD.setCursor(0, 0);
+  LCD.print("SMAK Stanislaus");
+  LCD.setCursor(0, 1);
+  LCD.print("Hitung: ");
+  LCD.print(counter);
+}
+
+void loop() {
+  int currentGreenButtonState = digitalRead(greenbutton);
+  int currentRedButtonState = digitalRead(redbutton);
+
+  if (currentGreenButtonState == LOW && lastGreenButtonState == HIGH) {
+    delay(50);
+    if (digitalRead(greenbutton) == LOW) {
+      counter++;
+      LCD.setCursor(8, 1);
+      LCD.print("   ");
+      LCD.setCursor(8, 1);
+      LCD.print(counter);
+      Serial.print("Counter: ");
+      Serial.println(counter);
+    }
+  }
+
+
+  if (currentRedButtonState == LOW && lastRedButtonState == HIGH) {
+    delay(50);
+    if (digitalRead(redbutton) == LOW) {
+      counter--;
+      LCD.setCursor(8, 1);
+      LCD.print("   ");
+      LCD.setCursor(8, 1);
+      LCD.print(counter);
+      Serial.print("Counter: ");
+      Serial.println(counter);
+    }
+  }
+
+
+  lastGreenButtonState = currentGreenButtonState;
+  lastRedButtonState = currentRedButtonState;
+
+  delay(10);
+}
